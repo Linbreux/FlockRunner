@@ -1,0 +1,30 @@
+project: "FlokeRunner"
+
+variables:
+  d: "date"
+  greeting: "Hello from FlokeRunner!"
+
+commands:
+  # fr cmd hello -v
+  # running hello command
+  # hello brother
+  hello:
+    cmd: "echo hello brother"
+    alias: "h"
+    # type: "default"
+
+  # fr cmd time -v
+  # running time command
+  # <<current time>>
+  time:
+    cmd: "date"
+
+  greet_date:
+    cmd: "echo {{greeting}} Today's date is: \"$( {{d}} )\"" # {{d}} will be substituted, and then executed by shell.
+
+
+sequence:
+  # fr seq tell-time
+  tell-time:
+    - hello
+    - time
