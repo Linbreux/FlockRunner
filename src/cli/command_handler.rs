@@ -72,8 +72,15 @@ impl CommandArguments{
             SubCommand::List=>{
                 println!("Lising all possible commands");
                 println!();
+                println!("Commands");
+                println!("========");
                 for (command, value) in project.commands.iter(){
-                    println!("{} {}", command, value.help.as_deref().unwrap_or(""));
+                    println!("{}", command);
+                    if value.help.is_some() {
+                        println!("  {}", value.help.as_deref().unwrap());
+                    }
+                    println!("  cmd: {}", value.cmd);
+                    println!("");
                 }
             }
             _ => ()

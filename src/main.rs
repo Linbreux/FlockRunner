@@ -8,7 +8,7 @@ use crate::yaml::project_config;
 fn main() {
     let mut yaml_reader = reader::Reader::new();
     let mut project = project_config::ProjectConfig::new();
-    let mut yaml_file: String = String::new();
+    let mut yaml_file: String;
 
     let result_check = cli::base::check_args();
     match result_check{
