@@ -70,7 +70,7 @@ impl CommandArguments{
             },
             SubCommand::Seq=>{},
             SubCommand::List=>{
-                println!("Lising all possible commands");
+            println!("Lising all possible commands");
                 println!();
                 println!("Commands");
                 println!("========");

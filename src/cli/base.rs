@@ -1,5 +1,43 @@
 use std::env;
 use std::collections::HashMap;
+use clap::{Parser, Subcommand};
+use crate::{cli::{cmd, list, seq}, yaml::project_config::ProjectConfig};
+
+#[derive(Parser)]
+#[command(name = "FlockRunner")]
+#[command(author = "Linbreux <linbreux@gmail.com>")]
+#[command(version = "1.0")]
+#[command(about = "Yaml command executor", long_about = None)]
+#[command(author, version, about, long_about = None)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+
+    #[arg(long, default_value = "flockrunner.yaml")]
+    pub file: Option<std::path::PathBuf>,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    Cmd(cmd::CmdArgs),
+    Seq(seq::SeqArgs),
+    List(list::ListArgs),
+}
+
+pub fn handle_command(command: &Commands, project: &ProjectConfig) {
+    match &command {
+        Commands::List(data) => {
+            list::handle_list(&data, &project);
+        }
+        Commands::Cmd(data) => {
+            cmd::handle_cmd(&data, &project);
+        }
+        Commands::Seq(data) => {
+            seq::handle_seq(&data, &project);
+        }
+        _ => { eprintln!("Not supported yet...");}
+    }
+}
 
 pub fn command_parser(
     cli_variables: &mut HashMap<String, String>,
