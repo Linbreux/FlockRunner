@@ -5,6 +5,7 @@ use crate::cli::base;
 enum SubCommand {
     Cmd,
     Seq,
+    List,
     None
 }
 
@@ -43,8 +44,9 @@ impl CommandArguments{
     fn string_to_subcommand(s: &String)->SubCommand
     {
         match s.as_str(){
-            "cmd" =>SubCommand::Cmd,
-            "seq" =>SubCommand::Seq,
+            "cmd" => SubCommand::Cmd,
+            "seq" => SubCommand::Seq,
+            "list" => SubCommand::List,
             _ => SubCommand::None
         }
     }
@@ -67,6 +69,13 @@ impl CommandArguments{
 
             },
             SubCommand::Seq=>{},
+            SubCommand::List=>{
+                println!("Lising all possible commands");
+                println!();
+                for (command, value) in project.commands.iter(){
+                    println!("{} {}", command, value.help.as_deref().unwrap_or(""));
+                }
+            }
             _ => ()
         }
     }

@@ -16,6 +16,7 @@ pub struct ProjectConfig {
 pub struct CommandDef {
     pub cmd: String,
     pub alias: Option<String>, // Alias is optional
+    pub help: Option<String>, // help text
     // r#type: Option<String>,
 }
 

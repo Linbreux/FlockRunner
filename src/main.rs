@@ -13,7 +13,10 @@ fn main() {
     let result_check = cli::base::check_args();
     match result_check{
         Ok(yaml_file_path) => yaml_file = yaml_file_path,
-        Err(err) => eprintln!("{}", err.to_string())
+        Err(err) => {
+            eprintln!("{}", err.to_string());
+            return;
+        }
     }
     let load_result = yaml_reader.load_file(&yaml_file);
 

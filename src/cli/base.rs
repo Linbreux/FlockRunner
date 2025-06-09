@@ -35,7 +35,7 @@ pub fn check_args() -> Result<String, String> {
     }
 
     if usefull_args.len() < 3 {
-        eprintln!("Usage: {} <yaml_file_path> <cmd|seq> <name> [-v] [variable=value ...]", env::args().next().unwrap_or_else(|| "flockrunner".to_string()));
+        eprintln!("Usage: {} <yaml_file_path> <cmd|seq|list> <name> [-v] [variable=value ...]", env::args().next().unwrap_or_else(|| "flockrunner".to_string()));
         return Err("Not enough arguments...".to_string())
     }
     Ok(usefull_args[0].clone())

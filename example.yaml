@@ -11,6 +11,7 @@ commands:
   hello:
     cmd: "echo hello brother"
     alias: "h"
+    help: "a nice welcome message :)"
     # type: "default"
 
   # fr cmd time -v
