@@ -21,9 +21,8 @@
           rust-analyzer
         ];
       };
-
       packages.${system}.flockrunner = rustPlatform.buildRustPackage {
-        pname = "FlockRunner"; # Name of your application
+        pname = "flockrunner"; # Name of your application
         version = "0.1.0"; # Version of your application
 
         # The source code for the package is the current directory
@@ -43,9 +42,15 @@
         cargoLock = {
           lockFile = ./Cargo.lock;
         };
+
       };
 
       defaultPackage.${system} = self.packages.${system}.flockrunner;
+
+      apps.${system}.default = {
+        type = "app";
+        program = "${self.packages.${system}.flockrunner}/bin/fr";
+      };
     };
 }
 
