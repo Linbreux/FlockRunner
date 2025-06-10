@@ -1,5 +1,6 @@
 use crate::project_config::{ProjectConfig, CommandDef};
 use std::collections::HashMap;
+use std::process::{Command, Output};
 use crate::cli::base;
 
 enum SubCommand {
@@ -16,6 +17,46 @@ pub struct CommandArguments{
     verbose: bool,
 
     variables: HashMap<String, String>,
+}
+
+pub fn execute_shell_command(command_str: &str, variables: &HashMap<String, String>) -> Result<(), String> {
+    let mut processed_command = command_str.to_string();
+
+    // Perform variable substitution
+    // Looks for patterns like {{variable_name}} and replaces them with their value.
+    for (key, value) in variables {
+        let placeholder = format!("{{{{{}}}}}", key); // e.g., {{d}}
+        processed_command = processed_command.replace(&placeholder, value);
+    }
+
+    // Use `sh -c` to allow executing arbitrary shell commands,
+    // including pipes, redirections, etc. This is important for commands
+    // like `date` or other shell features to be correctly interpreted.
+    let output: Output = Command::new("sh")
+        .arg("-c")
+        .arg(&processed_command) // Use the processed command string after substitution
+        .output()
+        .map_err(|e| format!("Failed to execute command '{}': {}", processed_command, e))?;
+
+    // Print stdout if available
+    if !output.stdout.is_empty() {
+        print!("{}", String::from_utf8_lossy(&output.stdout));
+    }
+
+    // Print stderr if available
+    if !output.stderr.is_empty() {
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+
+    // Check if the command exited successfully
+    if !output.status.success() {
+        return Err(format!(
+            "Command '{}' exited with non-zero status: {:?}",
+            processed_command, output.status
+        ));
+    }
+
+    Ok(())
 }
 
 impl CommandArguments{
@@ -87,7 +128,7 @@ impl CommandArguments{
         }
     }
 
-    fn search_command(&self, project: &ProjectConfig) -> Option<CommandDef>{
+    pub fn search_command(&self, project: &ProjectConfig) -> Option<CommandDef>{
         // Find the specified command by its name or alias.
         let mut found_cmd_def: Option<CommandDef> = None;
         for (cmd_name, cmd_def) in &project.commands {

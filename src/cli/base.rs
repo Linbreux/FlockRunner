@@ -13,6 +13,9 @@ pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
 
+    #[arg(long = "var", value_parser = parse_key_value)]
+    pub vars: Vec<(String, String)>,
+
     #[arg(long, default_value = "flockrunner.yaml")]
     pub file: Option<std::path::PathBuf>,
 }
@@ -35,7 +38,6 @@ pub fn handle_command(command: &Commands, project: &ProjectConfig) {
         Commands::Seq(data) => {
             seq::handle_seq(&data, &project);
         }
-        _ => { eprintln!("Not supported yet...");}
     }
 }
 
