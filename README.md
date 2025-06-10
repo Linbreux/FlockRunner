@@ -4,6 +4,18 @@
 
 FlockRunner is a powerful and highly customizable command executor designed to streamline your project workflows. It operates based on a simple YAML configuration file, giving you complete control over how your commands are organized and executed.
 
+# Installation
+
+Currently only nix is supported:
+
+```
+nix profile install github:Linbreux/FlockRunner
+```
+or (running it directly)
+```
+nix run github:Linbreux/FlockRunner
+```
+
 # Development
 
 ```
