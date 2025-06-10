@@ -4,8 +4,6 @@ use crate::project_config::CommandDef;
 use crate::cli::command_handler;
 use crate::yaml::project_config::CommandValue;
 
-use std::collections::HashMap;
-
 #[derive(Debug, Args)]
 #[command(about = "Run a command from the yaml file")]
 pub struct CmdArgs {
@@ -55,7 +53,7 @@ fn process_single_command(
         // Do not run the command. Just show it.
         println!("dry: {}", command_handler::parse_command(exec_command, &project.variables));
     } else {
-        command_handler::execute_shell_command(exec_command, &project.variables);
+        let _ = command_handler::execute_shell_command(exec_command, &project.variables);
     }
 }
 

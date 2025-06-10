@@ -1,23 +1,5 @@
-use crate::project_config::{ProjectConfig, CommandDef, CommandValue};
 use std::collections::HashMap;
 use std::process::{Command, Output};
-use crate::cli::base;
-
-enum SubCommand {
-    Cmd,
-    Seq,
-    List,
-    None
-}
-
-pub struct CommandArguments{
-    file_location: String,
-    command: SubCommand,
-    command_name: String,
-    verbose: bool,
-
-    variables: HashMap<String, String>,
-}
 
 pub fn parse_command(command: &String, variables: &HashMap<String, String>) -> String{
     let mut processed_command = command.clone();

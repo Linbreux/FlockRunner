@@ -1,4 +1,3 @@
-use std::env;
 use std::collections::HashMap;
 use clap::{Parser, Subcommand};
 use crate::{cli::{cmd, list, seq}, yaml::project_config::ProjectConfig};

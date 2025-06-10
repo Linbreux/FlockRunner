@@ -8,7 +8,7 @@ use crate::yaml::project_config::CommandValue;
 pub struct ListArgs {
 }
 
-pub fn handle_list(data: &ListArgs, project: &ProjectConfig){
+pub fn handle_list(_data: &ListArgs, project: &ProjectConfig){
     println!("Lising all possible commands");
     println!();
     println!("Commands");

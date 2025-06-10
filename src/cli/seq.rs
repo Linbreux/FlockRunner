@@ -6,5 +6,5 @@ use clap::Args;
 pub struct SeqArgs {
 }
 
-pub fn handle_seq(data: &SeqArgs, project: &ProjectConfig){
+pub fn handle_seq(_data: &SeqArgs, _project: &ProjectConfig){
 }

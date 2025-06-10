@@ -9,7 +9,7 @@ use clap::Parser;
 fn main() {
     let mut yaml_reader = reader::Reader::new();
     let mut project = project_config::ProjectConfig::new();
-    let mut yaml_file_path: std::path::PathBuf;
+    let yaml_file_path: std::path::PathBuf;
 
     let cli = cli::base::Cli::parse();
 

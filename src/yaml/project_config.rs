@@ -4,10 +4,14 @@ use crate::yaml::reader::{Reader};
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct ProjectConfig {
+    #[allow(dead_code)]
     pub project: String,
+
     // Variables are now directly a map of String to String
     pub variables: HashMap<String, String>,
     pub commands: HashMap<String, CommandDef>,
+
+    #[allow(dead_code)]
     pub sequence: HashMap<String, Vec<String>>,
 }
 
