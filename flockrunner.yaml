@@ -18,7 +18,13 @@ commands:
   # running time command
   # <<current time>>
   time:
-    cmd: "date"
+    cmd: date
+
+  more:
+    cmd:
+      - echo running more command
+      - timedatectl
+      - echo done running
 
   greet_date:
     cmd: echo "{{greeting}} Today's date is"

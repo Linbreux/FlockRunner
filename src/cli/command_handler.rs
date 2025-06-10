@@ -1,4 +1,4 @@
-use crate::project_config::{ProjectConfig, CommandDef};
+use crate::project_config::{ProjectConfig, CommandDef, CommandValue};
 use std::collections::HashMap;
 use std::process::{Command, Output};
 use crate::cli::base;
@@ -19,8 +19,8 @@ pub struct CommandArguments{
     variables: HashMap<String, String>,
 }
 
-pub fn parse_command(command: &CommandDef, variables: &HashMap<String, String>) -> String{
-    let mut processed_command = command.cmd.clone();
+pub fn parse_command(command: &String, variables: &HashMap<String, String>) -> String{
+    let mut processed_command = command.clone();
 
     // Perform variable substitution
     // Looks for patterns like {{variable_name}} and replaces them with their value.
@@ -37,7 +37,7 @@ pub fn parse_command(command: &CommandDef, variables: &HashMap<String, String>) 
     return processed_command;
 }
 
-pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, String>) -> Result<(), String> {
+pub fn execute_shell_command(command: &String, variables: &HashMap<String, String>) -> Result<(), String> {
 
     let processed_command = parse_command(command, variables);
     // Use `sh -c` to allow executing arbitrary shell commands,
@@ -68,71 +68,4 @@ pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, S
     }
 
     Ok(())
-}
-
-impl CommandArguments{
-
-    fn string_to_subcommand(s: &String)->SubCommand
-    {
-        match s.as_str(){
-            "cmd" => SubCommand::Cmd,
-            "seq" => SubCommand::Seq,
-            "list" => SubCommand::List,
-            _ => SubCommand::None
-        }
-    }
-
-    pub fn subcommand_handler(
-        &self,
-        project: &ProjectConfig,
-    ) {
-        match self.command{
-            SubCommand::Cmd=>{
-                let search_opt = self.search_command(&project);
-                if let Some(_command) = search_opt{
-                    if self.verbose{
-                        println!("Running {} command", self.command_name)
-                    }
-                }else{
-                    eprintln!("Could not run command {}", self.command_name);
-                    return;
-                }
-
-            },
-            SubCommand::Seq=>{},
-            SubCommand::List=>{
-            println!("Lising all possible commands");
-                println!();
-                println!("Commands");
-                println!("========");
-                for (command, value) in project.commands.iter(){
-                    println!("{}", command);
-                    if value.help.is_some() {
-                        println!("  {}", value.help.as_deref().unwrap());
-                    }
-                    println!("  cmd: {}", value.cmd);
-                    println!("");
-                }
-            }
-            _ => ()
-        }
-    }
-
-    pub fn search_command(&self, project: &ProjectConfig) -> Option<CommandDef>{
-        // Find the specified command by its name or alias.
-        let mut found_cmd_def: Option<CommandDef> = None;
-        for (cmd_name, cmd_def) in &project.commands {
-            if *cmd_name == self.command_name {
-                found_cmd_def = Some(cmd_def.clone());
-                break;
-            }
-            if let Some(alias) = &cmd_def.alias {
-                if *alias == self.command_name {
-                    found_cmd_def = Some(cmd_def.clone());
-                    break;
-                }
-            }
-        }
-        return found_cmd_def;
-    }
 }

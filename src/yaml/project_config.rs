@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use crate::yaml::reader::{Reader};
 
-/// Represents the top-level structure of the YAML configuration.
 #[derive(Debug, Deserialize, Clone)]
 pub struct ProjectConfig {
     pub project: String,
@@ -14,10 +13,17 @@ pub struct ProjectConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct CommandDef {
-    pub cmd: String,
+    pub cmd: CommandValue,
     pub alias: Option<String>, // Alias is optional
     pub help: Option<String>, // help text
     // r#type: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(untagged)]
+pub enum CommandValue {
+    List(Vec<String>),
+    String(String),
 }
 
 impl ProjectConfig{

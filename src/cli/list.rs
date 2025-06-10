@@ -1,6 +1,7 @@
 use clap::Args;
 
 use crate::yaml::project_config::ProjectConfig;
+use crate::yaml::project_config::CommandValue;
 
 #[derive(Debug, Args)]
 #[command(about = "List all possible commands/sequences")]
@@ -17,7 +18,17 @@ pub fn handle_list(data: &ListArgs, project: &ProjectConfig){
         if value.help.is_some() {
             println!("  {}", value.help.as_deref().unwrap());
         }
-        println!("  cmd: {}", value.cmd);
+
+        match &value.cmd{
+            CommandValue::String(exec_command) => {
+                println!("  cmd: {}", exec_command);
+            }
+            CommandValue::List(exec_list) => {
+                for exec_command in exec_list{
+                    println!("  cmd: {}", exec_command);
+                }
+            }
+        }
         println!("");
     }
 }
