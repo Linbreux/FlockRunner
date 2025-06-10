@@ -19,7 +19,7 @@ pub struct CommandArguments{
     variables: HashMap<String, String>,
 }
 
-pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, String>) -> Result<(), String> {
+pub fn parse_command(command: &CommandDef, variables: &HashMap<String, String>) -> String{
     let mut processed_command = command.cmd.clone();
 
     // Perform variable substitution
@@ -34,6 +34,12 @@ pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, S
         processed_command = processed_command.replace(&placeholder, &quoted_value);
     }
 
+    return processed_command;
+}
+
+pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, String>) -> Result<(), String> {
+
+    let processed_command = parse_command(command, variables);
     // Use `sh -c` to allow executing arbitrary shell commands,
     // including pipes, redirections, etc. This is important for commands
     // like `date` or other shell features to be correctly interpreted.

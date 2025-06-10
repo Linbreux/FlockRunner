@@ -1,7 +1,7 @@
 use clap::Args;
 use crate::project_config::{ProjectConfig};
 use crate::project_config::CommandDef;
-use crate::cli::command_handler::execute_shell_command;
+use crate::cli::command_handler;
 
 use std::collections::HashMap;
 
@@ -10,6 +10,11 @@ use std::collections::HashMap;
 pub struct CmdArgs {
     #[arg(help = "the yaml command you want to run")]
     cmd: String,
+
+
+    #[arg(long = "dryrun")]
+    #[arg(help = "Show all commands without running them")]
+    pub dryrun: bool,
 
     #[arg(short, long)]
     #[arg(help = "Add more information about the commands that will run")]
@@ -44,10 +49,14 @@ pub fn handle_cmd(
     let search_opt = search_command( data, &project);
 
     if let Some(command) = search_opt{
-        if data.verbose{
-            println!("Running {} command", data.cmd)
+        if data.verbose || data.dryrun {
+            println!("== Running {} command ==", data.cmd)
         }
-        execute_shell_command(&command, &project.variables);
+        if data.dryrun{
+            println!("dry: {}", command_handler::parse_command(&command, &project.variables) );
+        }else{
+            command_handler::execute_shell_command(&command, &project.variables);
+        }
 
     }else{
         eprintln!("Could not run command {}", data.cmd);
