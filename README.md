@@ -17,31 +17,38 @@ I wanted a straightforward method for managing and running tools tailored to ind
 
 A project file should look like the example.
 
+![example with the config bellow](./vhs/example.gif)
 ```yaml
-project: "FlokeRunner"
+project: "FlockRunner"
 
 variables:
-  d: "date"
-  greeting: "Hello from FlokeRunner!"
+  greeting: "Hello from FlockRunner!"
+  user: "Flock user"
 
 commands:
-  # fr cmd hello -v
-  # running hello command
-  # hello brother
   hello:
-    cmd: "echo hello brother"
+    cmd: "echo hello {{user}}"
     alias: "h"
-    help: "a nice welcome message :)"
     # type: "default"
 
-  # fr cmd time -v
-  # running time command
-  # <<current time>>
   time:
-    cmd: "date"
+    cmd: date
+
+  clean:
+    help: "cleanup"
+    cmd:
+      - rm -r flock && echo removed!
+
+  create:
+    help: "create a text file inside a flock folder"
+    cmd:
+      - echo "creating folder"
+      - mkdir flock
+      - echo "new textfile" > flock/test.txt && echo created textfile
+      - echo "done running, bye {{user}}"
 
   greet_date:
-    cmd: "echo {{greeting}} Today's date is: \"$( {{d}} )\"" # {{d}} will be substituted, and then executed by shell.
+    cmd: echo "{{greeting}}" && date
 
 
 sequence:
