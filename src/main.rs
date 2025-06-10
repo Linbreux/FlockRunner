@@ -39,7 +39,7 @@ fn main() {
         Ok(_) => project.read(&yaml_reader),
         Err(e) => println!("{}", e.to_string())
     }
-    cli::base::handle_command(&cli.command, &project);
+    cli::base::handle_command(&cli.command, &cli.vars, &mut project);
     
 
 }

@@ -21,7 +21,7 @@ commands:
     cmd: "date"
 
   greet_date:
-    cmd: "echo {{greeting}} Today's date is: \"$( {{d}} )\"" # {{d}} will be substituted, and then executed by shell.
+    cmd: echo "{{greeting}} Today's date is"
 
 
 sequence:

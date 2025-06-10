@@ -3,6 +3,8 @@ use crate::project_config::{ProjectConfig};
 use crate::project_config::CommandDef;
 use crate::cli::command_handler::execute_shell_command;
 
+use std::collections::HashMap;
+
 #[derive(Debug, Args)]
 #[command(about = "Run a command from the yaml file")]
 pub struct CmdArgs {
@@ -14,9 +16,11 @@ pub struct CmdArgs {
     verbose: bool,
 }
 
-
-pub fn search_command(data: &CmdArgs, project: &ProjectConfig) -> Option<CommandDef>{
-    // Find the specified command by its name or alias.
+pub fn search_command(
+    data: &CmdArgs,
+    project: &ProjectConfig
+) -> Option<CommandDef>{
+        // Find the specified command by its name or alias.
     let mut found_cmd_def: Option<CommandDef> = None;
     for (cmd_name, cmd_def) in &project.commands {
         if *cmd_name == data.cmd {
@@ -33,13 +37,17 @@ pub fn search_command(data: &CmdArgs, project: &ProjectConfig) -> Option<Command
     return found_cmd_def;
 }
 
-pub fn handle_cmd(data: &CmdArgs, project: &ProjectConfig){
+pub fn handle_cmd(
+    data: &CmdArgs,
+    project: &ProjectConfig
+){
     let search_opt = search_command( data, &project);
+
     if let Some(command) = search_opt{
         if data.verbose{
             println!("Running {} command", data.cmd)
         }
-        execute_shell_command(command, variables)
+        execute_shell_command(&command, &project.variables);
 
     }else{
         eprintln!("Could not run command {}", data.cmd);

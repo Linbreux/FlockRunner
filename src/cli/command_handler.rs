@@ -19,14 +19,19 @@ pub struct CommandArguments{
     variables: HashMap<String, String>,
 }
 
-pub fn execute_shell_command(command_str: &str, variables: &HashMap<String, String>) -> Result<(), String> {
-    let mut processed_command = command_str.to_string();
+pub fn execute_shell_command(command: &CommandDef, variables: &HashMap<String, String>) -> Result<(), String> {
+    let mut processed_command = command.cmd.clone();
 
     // Perform variable substitution
     // Looks for patterns like {{variable_name}} and replaces them with their value.
     for (key, value) in variables {
         let placeholder = format!("{{{{{}}}}}", key); // e.g., {{d}}
-        processed_command = processed_command.replace(&placeholder, value);
+
+        let escaped_value = value.replace('\'', "'\\''");
+        let quoted_value = format!("{}", escaped_value);
+
+        // Replace the placeholder with the safely quoted value
+        processed_command = processed_command.replace(&placeholder, &quoted_value);
     }
 
     // Use `sh -c` to allow executing arbitrary shell commands,
@@ -60,27 +65,6 @@ pub fn execute_shell_command(command_str: &str, variables: &HashMap<String, Stri
 }
 
 impl CommandArguments{
-    pub fn create(project: &ProjectConfig) ->Self
-    {
-        // cli arguments
-        let mut cli_variables: HashMap<String, String> = HashMap::new();
-        let mut usefull_args: Vec<String> = Vec::new();
-
-        base::command_parser(&mut cli_variables, &mut usefull_args);
-
-        let mut merged_variables = project.variables.clone();
-        for (key, value) in cli_variables {
-            merged_variables.insert(key.to_string(), value.to_string());
-        }
-
-        CommandArguments{
-            file_location: usefull_args[0].clone(),
-            command: CommandArguments::string_to_subcommand(&usefull_args[1]),
-            command_name: usefull_args[2].clone(),
-            verbose: usefull_args.iter().any(|arg| arg == "-v"),
-            variables: merged_variables
-        }
-    }
 
     fn string_to_subcommand(s: &String)->SubCommand
     {
