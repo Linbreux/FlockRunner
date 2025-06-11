@@ -6,24 +6,62 @@ use crate::yaml::reader;
 use crate::yaml::project_config;
 use clap::Parser;
 
+use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::io;
+
+fn get_final_config_path(config_input_path: &str) -> io::Result<PathBuf> {
+    let path_as_obj = Path::new(config_input_path);
+
+    if path_as_obj.is_absolute() {
+        if fs::metadata(&path_as_obj).is_ok() {
+            return Ok(path_as_obj.to_path_buf());
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!("Absolute config file not found: '{}'", config_input_path),
+            ));
+        }
+    }
+
+    let current_working_dir = env::current_dir()?;
+
+    let resolved_path_from_cwd = current_working_dir.join(path_as_obj);
+    if fs::metadata(&resolved_path_from_cwd).is_ok() {
+        return Ok(resolved_path_from_cwd);
+    }
+    let mut search_dir = current_working_dir.clone(); // Start search from CWD
+    loop {
+        let potential_config_path_upwards = search_dir.join(config_input_path);
+        if fs::metadata(&potential_config_path_upwards).is_ok() {
+            return Ok(potential_config_path_upwards);
+        }
+
+        if !search_dir.pop() {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!(
+                    "Could not find '{}' using direct resolution or by searching parent directories from the current working directory.",
+                    config_input_path
+                ),
+            ));
+        }
+    }
+}
 fn main() {
     let mut yaml_reader = reader::Reader::new();
     let mut project = project_config::ProjectConfig::new();
-    let yaml_file_path: std::path::PathBuf;
+    let mut yaml_file_path: std::path::PathBuf = Default::default();
 
     let cli = cli::base::Cli::parse();
 
     // Handle the --file flag
     match cli.file {
         Some(yaml_file) => {
-            yaml_file_path = yaml_file.clone();
-            if !yaml_file.exists() {
-                eprintln!("Error: The specified file does not exist: {:?}", yaml_file);
-                std::process::exit(1);
-            }
-            if !yaml_file.is_file() {
-                eprintln!("Error: The specified path is not a file: {:?}", yaml_file);
-                std::process::exit(1);
+            match get_final_config_path(yaml_file.to_str().unwrap()) {
+                Ok(path) => yaml_file_path = path,
+                Err(e) => eprintln!("Error: {}", e),
             }
         }
         None => {

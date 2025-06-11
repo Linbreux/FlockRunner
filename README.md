@@ -27,6 +27,8 @@ cargo build
 
 I wanted a straightforward method for managing and running tools tailored to individual projects. Despite the probable existence of numerous solutions, I decided to develop my own as a practical way to learn Rust.
 
+You can place your flockrunner.yaml file right in your project's main folder. No matter where you're running FlockRunner from within your project's hierarchy, it'll automatically look for that configuration file by searching parent directories. The first one it finds on its way up is the one it'll use, ensuring you're always using the correct project configuration.
+
 A project file should look like the example.
 
 ![example with the config bellow](./vhs/example.gif)

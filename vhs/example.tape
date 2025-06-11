@@ -4,7 +4,7 @@ Output example.gif
 # Set up a 1200x600 terminal with 46px font.
 Set FontSize 18
 Set Width 1200
-Set Height 600
+Set Height 700
 
 ##########
 Type "fr"
@@ -72,6 +72,13 @@ Sleep 4s
 
 Enter
 
+Type "fr cmd create"
+Sleep 1s
+Enter
+Sleep 4s
+
+Enter
+
 Type "ls flock"
 Sleep 1s
 Enter
@@ -79,7 +86,7 @@ Sleep 1s
 
 Enter
 
-Type "fr cmd clean"
+Type "fr cmd clean -v"
 Sleep 1s
 Enter
 Sleep 4s
