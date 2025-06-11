@@ -13,6 +13,7 @@ pub struct ProjectConfig {
 
     #[allow(dead_code)]
     pub sequence: HashMap<String, Vec<String>>,
+    pub shell: Option<HashMap<String, String>>
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -21,6 +22,7 @@ pub struct CommandDef {
     pub alias: Option<String>, // Alias is optional
     pub help: Option<String>, // help text
     pub keep_going: Option<bool>,
+    pub shell: Option<String>,
     // r#type: Option<String>,
 }
 
@@ -47,6 +49,7 @@ impl ProjectConfig{
             variables: HashMap::new(),
             commands: HashMap::new(),
             sequence: HashMap::new(),
+            shell: None,
         }
     }
 }

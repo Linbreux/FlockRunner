@@ -3,8 +3,14 @@ project: "FlockRunner"
 variables:
   greeting: "Hello from FlockRunner!"
   user: "Flock user"
+  os-cmd: "cat /etc/os-release"
+
+shell:
+  ubuntu-docker: docker run ubuntu
+  fedora-docker: docker run fedora
 
 commands:
+  # basic usage
   hello:
     cmd: "echo hello {{user}}"
     alias: "h"
@@ -30,6 +36,15 @@ commands:
   greet_date:
     cmd: echo "{{greeting}}" && date && exit 1
 
+  os_fedora:
+    help: run a command on fedora
+    cmd: cat /etc/os-release
+    shell: fedora-docker
+
+  os_ubuntu:
+    help: run a command on ubuntu
+    cmd: "{{os-cmd}}"
+    shell: fedora-docker
 
 sequence:
   # fr seq tell-time

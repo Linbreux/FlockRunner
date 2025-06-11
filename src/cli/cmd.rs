@@ -43,6 +43,7 @@ pub fn search_command(
 }
 
 fn process_single_command (
+    command: &CommandDef,
     exec_command: &String,
     data: &CmdArgs,
     project: &ProjectConfig, // Assuming `project` is ProjectConfig
@@ -52,9 +53,9 @@ fn process_single_command (
     }
     if data.dryrun {
         // Do not run the command. Just show it.
-        println!("dry: {}", format!("{}", command_handler::parse_command(exec_command, &project.variables)).bold());
+        println!("dry: {}", format!("{}", command_handler::parse_command(&exec_command, &project.variables)).bold());
     } else {
-        return command_handler::execute_shell_command(exec_command, &project.variables);
+        return command_handler::execute_shell_command(&command, &exec_command, &project);
     }
     Ok(())
 }
@@ -67,8 +68,8 @@ pub fn handle_cmd(
 
     if let Some(command) = search_opt{
         match command.cmd {
-            CommandValue::String(exec_command) => {
-                let result = process_single_command(&exec_command, data, project);
+            CommandValue::String(ref exec_command) => {
+                let result = process_single_command(&command, &exec_command, data, project);
                 match result{
                     Ok(_) => if data.verbose {
                             println!("{}", format!("Succesfully ran!").green())
@@ -76,9 +77,9 @@ pub fn handle_cmd(
                     Err(err) => println!("{}",format!("Command failed!").red())
                 }
             }
-            CommandValue::List(l) => {
+            CommandValue::List(ref l) => {
                 for exec_command in l {
-                    let result = process_single_command(&exec_command, data, project);
+                    let result = process_single_command(&command, &exec_command, data, project);
 
                     match result{
                         Ok(_) => if data.verbose {

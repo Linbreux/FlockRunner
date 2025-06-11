@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::process::{Command, Output};
 
+use crate::yaml::project_config::{CommandDef, ProjectConfig};
+
 pub fn parse_command(command: &String, variables: &HashMap<String, String>) -> String{
     let mut processed_command = command.clone();
 
@@ -19,15 +21,31 @@ pub fn parse_command(command: &String, variables: &HashMap<String, String>) -> S
     return processed_command;
 }
 
-pub fn execute_shell_command(command: &String, variables: &HashMap<String, String>) -> Result<(), String> {
+pub fn return_shell(project: &ProjectConfig, shell: Option<&String>) -> String{
+    let default_shell: String = "sh".to_string();
+    match shell{
+        Some(s) => {
+            project.shell
+                .as_ref()
+                .and_then(|shells| shells.get(s))
+                .map(|shell_command| shell_command)
+                .unwrap_or(&default_shell).to_string()
+        }
+        None=> default_shell.to_string()
+    }
+}
 
-    let processed_command = parse_command(command, variables);
-    // Use `sh -c` to allow executing arbitrary shell commands,
-    // including pipes, redirections, etc. This is important for commands
-    // like `date` or other shell features to be correctly interpreted.
+pub fn execute_shell_command(command: &CommandDef, exec_command: &String, project: &ProjectConfig) -> Result<(), String> {
+
+    let processed_command = parse_command(&exec_command, &project.variables);
+
+    let shell = return_shell(&project, command.shell.as_ref());
+
+    println!("{} {}", &shell, &processed_command);
     let output: Output = Command::new("sh")
         .arg("-c")
-        .arg(&processed_command) // Use the processed command string after substitution
+        .arg(format!("{} \"{}\"", shell, &processed_command))
+        //.arg(&processed_command) // Use the processed command string after substitution
         .output()
         .map_err(|e| format!("Failed to execute command '{}': {}", processed_command, e))?;
 
