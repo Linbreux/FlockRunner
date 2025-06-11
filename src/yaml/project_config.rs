@@ -20,6 +20,7 @@ pub struct CommandDef {
     pub cmd: CommandValue,
     pub alias: Option<String>, // Alias is optional
     pub help: Option<String>, // help text
+    pub keep_going: Option<bool>,
     // r#type: Option<String>,
 }
 

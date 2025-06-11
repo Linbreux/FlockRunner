@@ -20,6 +20,7 @@ commands:
 
   create:
     help: "create a text file inside a flock folder"
+    keep_going: true
     cmd:
       - echo "creating folder"
       - mkdir flock
@@ -27,7 +28,7 @@ commands:
       - echo "done running, bye {{user}}"
 
   greet_date:
-    cmd: echo "{{greeting}}" && date
+    cmd: echo "{{greeting}}" && date && exit 1
 
 
 sequence:

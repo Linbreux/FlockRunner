@@ -3,6 +3,7 @@ use crate::project_config::{ProjectConfig};
 use crate::project_config::CommandDef;
 use crate::cli::command_handler;
 use crate::yaml::project_config::CommandValue;
+use colored::Colorize;
 
 #[derive(Debug, Args)]
 #[command(about = "Run a command from the yaml file")]
@@ -41,20 +42,21 @@ pub fn search_command(
     return found_cmd_def;
 }
 
-fn process_single_command(
+fn process_single_command (
     exec_command: &String,
     data: &CmdArgs,
     project: &ProjectConfig, // Assuming `project` is ProjectConfig
-) {
+) -> Result<(), String> {
     if data.verbose || data.dryrun {
-        println!("== Running {} command ==", data.cmd);
+        println!("{}", format!("== Running {} command ==", data.cmd).blue());
     }
     if data.dryrun {
         // Do not run the command. Just show it.
-        println!("dry: {}", command_handler::parse_command(exec_command, &project.variables));
+        println!("dry: {}", format!("{}", command_handler::parse_command(exec_command, &project.variables)).bold());
     } else {
-        let _ = command_handler::execute_shell_command(exec_command, &project.variables);
+        return command_handler::execute_shell_command(exec_command, &project.variables);
     }
+    Ok(())
 }
 
 pub fn handle_cmd(
@@ -66,11 +68,31 @@ pub fn handle_cmd(
     if let Some(command) = search_opt{
         match command.cmd {
             CommandValue::String(exec_command) => {
-                process_single_command(&exec_command, data, project);
+                let result = process_single_command(&exec_command, data, project);
+                match result{
+                    Ok(_) => if data.verbose {
+                            println!("{}", format!("Succesfully ran!").green())
+                    },
+                    Err(err) => println!("{}",format!("Command failed!").red())
+                }
             }
             CommandValue::List(l) => {
                 for exec_command in l {
-                    process_single_command(&exec_command, data, project);
+                    let result = process_single_command(&exec_command, data, project);
+
+                    match result{
+                        Ok(_) => if data.verbose {
+                            println!("{}", format!("Succesfully ran!").green())
+                        },
+                        Err(err) => {
+                            println!("{}",format!("Command failed!").red());
+                            if let Some(kg) = command.keep_going{
+                                println!("{}", format!("Keep going flag enabled. Continuing!").yellow());
+                            }else{
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
