@@ -4,15 +4,9 @@ variables:
   greeting: "Hello from FlockRunner!"
   user: "Flock user"
 
-shell:
-  ubuntu-docker: docker run ubuntu sh -c
-  fedora-docker: docker run fedora sh -c
-  zsh: zsh -c
-
 commands:
-  # basic usage
   hello:
-    cmd: echo hello {{user}}
+    cmd: "echo hello {{user}}"
     alias: "h"
     # type: "default"
 
@@ -21,30 +15,21 @@ commands:
 
   clean:
     help: "cleanup"
-    keep_going: true
     cmd:
       - rm -r flock && echo removed!
 
   create:
     help: "create a text file inside a flock folder"
+    keep_going: true
     cmd:
       - echo "creating folder"
-      - mkdir flock # if the folder already exists, fr will terminate. See 'keep_going' option.
+      - mkdir flock
       - echo "new textfile" > flock/test.txt && echo created textfile
       - echo "done running, bye {{user}}"
 
   greet_date:
     cmd: echo "{{greeting}}" && date && exit 1
 
-  os_fedora:
-    help: run a command on fedora
-    cmd: cat /etc/os-release
-    shell: fedora-docker
-
-  os_ubuntu:
-    help: run a command on ubuntu
-    cmd: cat /etc/os-release
-    shell: ubuntu-docker
 
 sequence:
   # fr seq tell-time

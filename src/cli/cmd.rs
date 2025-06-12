@@ -53,7 +53,10 @@ fn process_single_command (
     }
     if data.dryrun {
         // Do not run the command. Just show it.
-        println!("dry: {}", format!("{}", command_handler::parse_command(&exec_command, &project.variables)).bold());
+        println!("dry: {}", format!("{} {}", 
+            command_handler::return_shell(&project, command.shell.as_ref()),
+            command_handler::parse_command(&exec_command, &project.variables)).bold()
+        );
     } else {
         return command_handler::execute_shell_command(&command, &exec_command, &project);
     }

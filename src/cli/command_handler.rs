@@ -22,7 +22,7 @@ pub fn parse_command(command: &String, variables: &HashMap<String, String>) -> S
 }
 
 pub fn return_shell(project: &ProjectConfig, shell: Option<&String>) -> String{
-    let default_shell: String = "sh".to_string();
+    let default_shell: String = "sh -c".to_string();
     match shell{
         Some(s) => {
             project.shell
@@ -41,10 +41,9 @@ pub fn execute_shell_command(command: &CommandDef, exec_command: &String, projec
 
     let shell = return_shell(&project, command.shell.as_ref());
 
-    println!("{} {}", &shell, &processed_command);
     let output: Output = Command::new("sh")
         .arg("-c")
-        .arg(format!("{} \"{}\"", shell, &processed_command))
+        .arg(format!("{} \"{}\"", &shell, &processed_command))
         //.arg(&processed_command) // Use the processed command string after substitution
         .output()
         .map_err(|e| format!("Failed to execute command '{}': {}", processed_command, e))?;
