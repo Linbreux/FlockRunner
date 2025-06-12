@@ -4,6 +4,7 @@ use crate::project_config::CommandDef;
 use crate::cli::command_handler;
 use crate::yaml::project_config::CommandValue;
 use colored::Colorize;
+use std::collections::HashMap;
 
 #[derive(Debug, Args)]
 #[command(about = "Run a command from the yaml file")]
@@ -54,7 +55,7 @@ fn process_single_command (
     if data.dryrun {
         // Do not run the command. Just show it.
         println!("dry: {}", format!("{} {}", 
-            command_handler::return_shell(&project, command.shell.as_ref()),
+            command_handler::parse_command(&command_handler::return_shell(&project, command.shell.as_ref()), &project.variables),
             command_handler::parse_command(&exec_command, &project.variables)).bold()
         );
     } else {
@@ -65,14 +66,21 @@ fn process_single_command (
 
 pub fn handle_cmd(
     data: &CmdArgs,
-    project: &ProjectConfig
+    project: &mut ProjectConfig,
+    priority_vars: HashMap<String, String>
 ){
     let search_opt = search_command( data, &project);
 
     if let Some(command) = search_opt{
+
+        if let Some(ref vars) = command.variables{
+            project.variables.extend(vars.iter().map(|(k, v)| (k.clone(), v.clone())));
+        }
+        project.variables.extend(priority_vars);
+
         match command.cmd {
             CommandValue::String(ref exec_command) => {
-                let result = process_single_command(&command, &exec_command, data, project);
+                let result = process_single_command(&command, &exec_command, data, &project);
                 match result{
                     Ok(_) => if data.verbose {
                             println!("{}", format!("Succesfully ran!").green())
@@ -82,7 +90,7 @@ pub fn handle_cmd(
             }
             CommandValue::List(ref l) => {
                 for exec_command in l {
-                    let result = process_single_command(&command, &exec_command, data, project);
+                    let result = process_single_command(&command, &exec_command, data, &project);
 
                     match result{
                         Ok(_) => if data.verbose {

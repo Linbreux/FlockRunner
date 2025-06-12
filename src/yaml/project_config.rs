@@ -23,6 +23,7 @@ pub struct CommandDef {
     pub help: Option<String>, // help text
     pub keep_going: Option<bool>,
     pub shell: Option<String>,
+    pub variables: Option<HashMap<String, String>>,
     // r#type: Option<String>,
 }
 

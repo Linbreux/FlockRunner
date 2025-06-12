@@ -3,10 +3,10 @@ project: "FlockRunner"
 variables:
   greeting: "Hello from FlockRunner!"
   user: "Flock user"
+  os: fedora
 
 shell:
-  ubuntu-docker: docker run ubuntu sh -c
-  fedora-docker: docker run fedora sh -c
+  docker-shell: docker run {{os}} sh -c
   zsh: zsh -c
 
 commands:
@@ -38,13 +38,21 @@ commands:
 
   os_fedora:
     help: run a command on fedora
-    cmd: cat /etc/os-release
-    shell: fedora-docker
+    shell: docker-shell
+    variables:
+      os: "fedora"
+    cmd: 
+      - cat /etc/os-release
+      - echo == Ran from {{os}} ==
 
   os_ubuntu:
-    help: run a command on ubuntu
-    cmd: cat /etc/os-release
-    shell: ubuntu-docker
+    help: run a command on fedora
+    shell: docker-shell
+    variables:
+      os: "ubuntu"
+    cmd: 
+      - cat /etc/os-release
+      - echo == Ran from {{os}} ==
 
 sequence:
   # fr seq tell-time

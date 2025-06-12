@@ -39,19 +39,18 @@ pub enum Commands {
 
 pub fn handle_command(
     command: &Commands,
-    vars: &Vec<(String, String)>,
+    priority_vars_vec: &Vec<(String, String)>,
     project: &mut ProjectConfig
 ) {
-    let variables: HashMap<String, String> = vars.into_iter().cloned().collect();
+    let priotity_variables: HashMap<String, String> = priority_vars_vec.into_iter().cloned().collect();
     // merge cli vars with project once. cli has priority.
-    project.variables.extend(variables);
 
     match &command {
         Commands::List(data) => {
             list::handle_list(&data, &project);
         }
         Commands::Cmd(data) => {
-            cmd::handle_cmd(&data, &project);
+            cmd::handle_cmd(&data, project, priotity_variables);
         }
         Commands::Seq(data) => {
             seq::handle_seq(&data, &project);

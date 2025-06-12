@@ -39,12 +39,11 @@ pub fn execute_shell_command(command: &CommandDef, exec_command: &String, projec
 
     let processed_command = parse_command(&exec_command, &project.variables);
 
-    let shell = return_shell(&project, command.shell.as_ref());
+    let shell = parse_command(&return_shell(&project, command.shell.as_ref()), &project.variables);
 
     let output: Output = Command::new("sh")
         .arg("-c")
         .arg(format!("{} \"{}\"", &shell, &processed_command))
-        //.arg(&processed_command) // Use the processed command string after substitution
         .output()
         .map_err(|e| format!("Failed to execute command '{}': {}", processed_command, e))?;
 
