@@ -1,87 +1,213 @@
-## FlockRunner Configuration File Structure (`flockrunner.yaml`)
+# FlockRunner Project: Configuration Structure and Features with Examples
 
-This document outlines the structure of the **`flockrunner.yaml`** file. This file defines how FlockRunner behaves, allowing you to set project-specific variables, define custom commands, and group those commands into sequences.
+This document explains the core structure and key features of a **FlockRunner** configuration file, using concise examples to illustrate each concept. FlockRunner is designed to parse YAML files like this to define and execute commands, providing a flexible way to automate tasks.
 
----
-### Top-Level Keys
+## Configuration Structure
 
-Your `flockrunner.yaml` configuration file is organized under the following top-level keys:
+A FlockRunner configuration file is organized into several top-level sections:
 
-* **`project`**: Defines the name of your project.
-* **`variables`**: A collection of key-value pairs that can be used throughout your commands.
-* **`commands`**: A mapping where each key represents a unique command name, and its value defines the command's behavior.
-* **`sequence`**: A mapping where each key defines a sequence name, and its value is an ordered list of command names to execute.
+* **`project`**:
 
-At the moment all these keys are required to start a project.
+    * Defines the overall name for your configuration.
 
----
-### Detailed Structure
+    * **Example**:
 
-#### `project`
-This key holds a single string value representing the name of your project. It's primarily used for identification and context.
+        ```yaml
+        project: "MyWebApp"
 
-* **Type**: String
-* **Example**: `project: "FlockRunner"`
+        ```
 
-#### `variables`
-This section allows you to define custom **variables** that can be referenced within your commands. Each variable is a simple key-value pair.
+* **`variables`**:
 
-* **Type**: Map (key-value pairs)
-* **Usage in commands**: Variables are interpolated using the `{{variable_name}}` syntax.
-* **Example**:
-    ```yaml
-    variables:
-      greeting: "Hello from FlockRunner!"
-      user: "Flock user"
-    ```
+    * Allows you to define reusable values that can be inserted into your commands. These enhance flexibility.
 
-#### `commands`
-This is where you define individual, executable actions. Each entry under `commands` is a unique **command name** that maps to a set of properties defining its execution.
+    * You reference variables using `{{variable_name}}`.
 
-* **Type**: Map (command name to command properties)
+    * You can also override these variables directly from the command line using the `fr` tool.
 
-    Each **command name** (e.g., `hello`, `time`, `clean`) can have the following properties:
+    * **Example**:
 
-    * **`cmd`**: The actual command(s) to be executed.
-        * **Type**: String or List of Strings
-        * **Description**: Can be a single shell command string, or a list of commands that will be executed in order.
-        * **Example**:
-            ```yaml
-            hello:
-              cmd: "echo hello {{user}}"
-            clean:
-              cmd:
-                - rm -r flock
-                - echo removed!
-            ```
+        ```yaml
+        variables:
+          app_name: "AuthService"
+          user_email: "dev@example.com"
 
-    * **`alias`**: An optional shorter name for the command.
-        * **Type**: String
-        * **Description**: Allows you to invoke the command using a more concise alias.
-        * **Example**: `alias: "h"`
+        ```
 
-    * **`help`**: An optional descriptive text for the command.
-        * **Type**: String
-        * **Description**: Provides a brief explanation of what the command does, typically displayed when listing commands.
-        * **Example**: `help: "cleanup"`
+    * **CLI Example**: To override `user_email` when running a command:
 
-    * **`keep_going`**: Controls error handling for multi-step commands.
-        * **Type**: Boolean
-        * **Description**: If `true`, FlockRunner will continue executing subsequent commands in a `cmd` list even if a previous command fails. If `false` (or omitted, which defaults to `false`), execution will stop on the first error within the `cmd` list. This only applies to the `cmd` property, not across different commands in a `sequence`.
-        * **Example**: `keep_going: true`
+        ```bash
+        fr cmd some_command -D user_email=new.user@example.com
 
-#### `sequence`
-This section allows you to define a series of commands to be run in a specific order. Each entry under `sequence` is a **sequence name** that maps to an ordered list of **command names**.
+        ```
 
-* **Type**: Map (sequence name to list of command names)
-* **Description**: When a sequence is executed, FlockRunner will run each command listed under it, in the order they appear.
-* **Example**:
-    ```yaml
-    sequence:
-      tell-time:
-        - hello
-        - time
-    ```
+* **`shells`**:
 
----
-This structured `flockrunner.yaml` file empowers you to define complex workflows and easily manage your project's command-line operations with FlockRunner.
+    * Defines custom execution environments for your commands, beyond the default system shell.
+
+    * This is useful for running commands within specific interpreters (like `zsh`) or container environments (like Docker).
+
+    * **Example**:
+
+        ```yaml
+        shells:
+          docker-run: docker run --rm -it {{image}} sh -c
+          bash-strict: bash -c -e
+
+        ```
+
+* **`commands`**:
+
+    * This section defines the individual tasks or operations FlockRunner can execute.
+
+    * Each command has a unique name and various properties to control its behavior.
+
+    * You run these commands using the `fr cmd <command_name>` command.
+
+    * **Example**:
+
+        ```yaml
+        commands:
+          install-deps:
+            cmd: npm install
+            help: "Installs project dependencies."
+
+        ```
+
+    * **CLI Example**: To run the `install-deps` command:
+
+        ```bash
+        fr cmd install-deps
+
+        ```
+
+## Key Command Features
+
+Within the `commands` section, each individual command definition can leverage several features:
+
+* **`cmd`**:
+
+    * **Purpose**: The actual command-line instruction(s) to be executed.
+
+    * **Format**: Can be a single string for a single command, or a **list of strings** for multiple sequential commands.
+
+    * **Example (Single Command)**:
+
+        ```yaml
+        my_command:
+          cmd: echo "Hello, World!"
+        ```
+
+    * **CLI Example**: To run `my_command`:
+
+        ```bash
+        fr cmd my_command
+        ```
+
+    * **Example (List of Commands)**:
+
+        ```yaml
+        setup_project:
+          cmd:
+            - mkdir my_project
+            - cd my_project
+            - touch README.md
+            - echo "Project initialized."
+        ```
+
+    * **CLI Example**: To run `setup_project`:
+
+        ```bash
+        fr cmd setup_project
+        ```
+
+* **`help`**:
+
+    * **Purpose**: A descriptive string explaining what the command does.
+
+    * **Example**:
+
+        ```yaml
+        deploy_app:
+          cmd: ./deploy.sh
+          help: "Deploys the application to production."
+        ```
+
+* **`alias`**:
+
+    * **Purpose**: Defines a shorter, alternative name for the command, making it quicker to type.
+
+    * **Example**:
+
+        ```yaml
+        status_check:
+          cmd: git status
+          alias: "gs"
+          help: "Shows Git repository status."
+        ```
+
+    * **CLI Example**: To run `status_check` using its alias:
+
+        ```bash
+        fr cmd gs
+        ```
+
+* **`keep_going`**:
+
+    * **Purpose**: A boolean flag (`true` or `false`). If `true`, FlockRunner will continue executing subsequent commands in a sequence (if a sequence feature were implemented) even if *this* command fails (exits with a non-zero status code). By default, a failing command would typically stop execution.
+
+    * **Example**:
+
+        ```yaml
+        cleanup_old_logs:
+          cmd: rm -rf /var/log/old_logs
+          keep_going: true # Continue even if logs directory doesn't exist
+          help: "Removes old log files, ignores errors if directory is missing."
+        ```
+
+    * **CLI Example**: To run `cleanup_old_logs`:
+
+        ```bash
+        fr cmd cleanup_old_logs
+        ```
+
+* **`shell`**:
+
+    * **Purpose**: Specifies which shell definition (from the top-level `shells` section) should be used for this particular command.
+
+    * **Example**:
+
+        ```yaml
+        run_in_alpine:
+          shell: docker-run # Assuming 'docker-run: docker run --rm -it {{image}} sh -c' is defined in 'shells'
+          variables:
+            image: alpine/git
+          cmd: git clone [https://github.com/example/repo.git](https://github.com/example/repo.git)
+          help: "Clones a Git repo inside an Alpine Docker container."
+        ```
+
+    * **CLI Example**: To run `run_in_alpine`:
+
+        ```bash
+        fr cmd run_in_alpine
+        ```
+
+* **`variables` (local to command)**:
+
+    * **Purpose**: Allows you to define variables that are *specific* to this command's execution. These local variables override any global variables with the same name, but only for the duration of this command.
+
+    * **Example**:
+
+        ```yaml
+        generate_report:
+          cmd: generate-report --format {{report_format}}
+          variables:
+            report_format: pdf # Overrides a global 'report_format' for this command
+          help: "Generates the monthly report in PDF format."
+        ```
+
+    * **CLI Example**: To run `generate_report` with its local variable:
+
+        ```bash
+        fr cmd generate_report
+        ```
