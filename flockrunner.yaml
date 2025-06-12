@@ -3,59 +3,50 @@ project: "FlockRunner"
 variables:
   greeting: "Hello from FlockRunner!"
   user: "Flock user"
-  os: fedora
 
-shell:
-  docker-shell: docker run {{os}} sh -c
-  zsh: zsh -c
+shells:
+  # A shell definition to run commands inside a Docker container
+  docker-shell: docker run {{os}} sh -c 
+  # An alternative shell using zsh
+  zsh: zsh -c 
 
 commands:
-  # basic usage
   hello:
     cmd: echo hello {{user}}
     alias: "h"
-    # type: "default"
+    help: "Greets the current user."
 
   time:
     cmd: date
-
-  clean:
-    help: "cleanup"
-    keep_going: true
-    cmd:
-      - rm -r flock && echo removed!
+    help: "Shows the current system date and time."
 
   create:
-    help: "create a text file inside a flock folder"
+    help: "Creates a 'flock' directory and a 'test.txt' file within it."
     cmd:
-      - echo "creating folder"
-      - mkdir flock # if the folder already exists, fr will terminate. See 'keep_going' option.
-      - echo "new textfile" > flock/test.txt && echo created textfile
-      - echo "done running, bye {{user}}"
+      - echo "Creating folder..."
+      - mkdir flock
+      - "echo new textfile > flock/test.txt && echo Created textfile: flock/test.txt"
+      - echo "Done creating files, bye {{user}}!"
+
+  clean:
+    help: "Removes the 'flock' directory and its contents."
+    keep_going: true # Continues execution even if `rm` fails (e.g., directory doesn't exist)
+    cmd:
+      - rm -rf flock && echo "Removed 'flock' directory!" || echo "'flock' directory not found or could not be removed."
 
   greet_date:
-    cmd: echo "{{greeting}}" && date && exit 1
+    help: "Displays a greeting, the current date, and then exits with an error."
+    cmd: echo {{greeting}} && date && exit 1 # cmd will file because of exit code.
 
-  os_fedora:
-    help: run a command on fedora
+  run_on_os:
+    help: "Runs a command inside a specified Docker container (defaulting to fedora)."
+    # Uses the 'docker-shell' defined above (shells)
     shell: docker-shell
     variables:
-      os: "fedora"
-    cmd: 
+      os: fedora # Overrides the project's 'os' variable for this command only
+    cmd:
+      - echo Running 'cat /etc/os-release' inside {{os}} container...
       - cat /etc/os-release
-      - echo == Ran from {{os}} ==
-
-  os_ubuntu:
-    help: run a command on fedora
-    shell: docker-shell
-    variables:
-      os: "ubuntu"
-    cmd: 
-      - cat /etc/os-release
-      - echo == Ran from {{os}} ==
+      - echo == Command executed within the {{os}} container ==
 
 sequence:
-  # fr seq tell-time
-  tell-time:
-    - hello
-    - time

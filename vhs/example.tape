@@ -5,6 +5,7 @@ Output example.gif
 Set FontSize 18
 Set Width 1200
 Set Height 700
+Set Shell zsh
 
 ##########
 Type "fr"
@@ -98,3 +99,22 @@ Sleep 1s
 Enter
 Sleep 1s
 
+##########
+Hide
+Type "clear"
+Enter
+Show
+
+Type "fr cmd run_on_os -v"
+Sleep 1s
+Enter
+Sleep 4s
+
+Enter
+
+Type "fr cmd run_on_os -D os=ubuntu -v"
+Sleep 1s
+Enter
+Sleep 4s
+
+Enter

@@ -19,6 +19,7 @@
           rustc
           cargo
           rust-analyzer
+          vhs
         ];
       };
       packages.${system}.flockrunner = rustPlatform.buildRustPackage {
