@@ -13,7 +13,7 @@ pub struct ProjectConfig {
 
     #[allow(dead_code)]
     pub sequence: HashMap<String, Vec<String>>,
-    pub shell: Option<HashMap<String, String>>
+    pub shells: Option<HashMap<String, String>>
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -50,7 +50,7 @@ impl ProjectConfig{
             variables: HashMap::new(),
             commands: HashMap::new(),
             sequence: HashMap::new(),
-            shell: None,
+            shells: None,
         }
     }
 }

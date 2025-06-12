@@ -51,14 +51,14 @@ fn process_single_command (
 ) -> Result<(), String> {
     if data.verbose || data.dryrun {
         println!("{}", format!("== Running {} command ==", data.cmd).blue());
-    }
-    if data.dryrun {
         // Do not run the command. Just show it.
-        println!("dry: {}", format!("{} {}", 
+        println!("{}", format!("{} {} {}", 
+            "Command:".blue().bold(),
             command_handler::parse_command(&command_handler::return_shell(&project, command.shell.as_ref()), &project.variables),
             command_handler::parse_command(&exec_command, &project.variables)).bold()
         );
-    } else {
+    }
+    if !data.dryrun {
         return command_handler::execute_shell_command(&command, &exec_command, &project);
     }
     Ok(())

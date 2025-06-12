@@ -25,7 +25,7 @@ pub fn return_shell(project: &ProjectConfig, shell: Option<&String>) -> String{
     let default_shell: String = "sh -c".to_string();
     match shell{
         Some(s) => {
-            project.shell
+            project.shells
                 .as_ref()
                 .and_then(|shells| shells.get(s))
                 .map(|shell_command| shell_command)
