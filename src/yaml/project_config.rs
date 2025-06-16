@@ -12,7 +12,7 @@ pub struct ProjectConfig {
     pub commands: HashMap<String, CommandDef>,
 
     #[allow(dead_code)]
-    pub sequence: HashMap<String, Vec<String>>,
+    pub sequence: Option<HashMap<String, Vec<String>>>,
     pub shells: Option<HashMap<String, String>>
 }
 
@@ -49,7 +49,7 @@ impl ProjectConfig{
             project: String::new(),
             variables: HashMap::new(),
             commands: HashMap::new(),
-            sequence: HashMap::new(),
+            sequence: None,
             shells: None,
         }
     }

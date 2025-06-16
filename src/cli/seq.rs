@@ -7,4 +7,5 @@ pub struct SeqArgs {
 }
 
 pub fn handle_seq(_data: &SeqArgs, _project: &ProjectConfig){
+    println!("This feature will be implemented in a newer release");
 }
